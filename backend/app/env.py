@@ -1,0 +1,27 @@
+"""Load backend/.env early so all modules see GEMINI_API_KEY."""
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+
+def load_backend_dotenv() -> None:
+    """Load backend/.env into os.environ (does not override existing variables)."""
+    env_path = Path(__file__).resolve().parent.parent / ".env"
+    if not env_path.is_file():
+        return
+    try:
+        for raw in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key = key.strip()
+            val = val.strip().strip('"').strip("'")
+            if key and val and key not in os.environ:
+                os.environ[key] = val
+    except OSError:
+        pass
+
+
+load_backend_dotenv()
