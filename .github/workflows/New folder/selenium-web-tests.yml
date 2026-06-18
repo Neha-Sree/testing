@@ -1,0 +1,42 @@
+name: Selenium Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-selenium-suite:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Headless Chrome Browser
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: stable
+          install-chromedriver: true
+
+      - name: Install Project Dependencies
+        run: |
+          cd selenium_tests
+          npm install
+
+      - name: Execute Live Selenium Tests
+        run: |
+          cd selenium_tests
+          npm run test-report
+
+      - name: Upload Excel Test Report Matrix
+        uses: actions/upload-artifact@v4
+        with:
+          name: Selenium-Web-Execution-Report
+          path: selenium_tests/reports/selenium_11_topics_110_web_cases.xlsx
