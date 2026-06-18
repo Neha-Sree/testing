@@ -4,7 +4,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "test-load": "python automated_test/load_test.py && python automated_test/export_load_test_excel.py",
+    "test-vulnerability": "python automated_test/run_all_tests.py",
+    "test-appium": "cd appium_tests && npm test",
+    "test-report": "cd selenium_tests && npm run test-report"
   },
   "devDependencies": {
     "gh-pages": "^6.3.0"
