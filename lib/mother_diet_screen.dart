@@ -42,9 +42,9 @@ class _MotherDietScreenState extends State<MotherDietScreen> {
   static const _slotIcons = <String, IconData>{
     'breakfast': Icons.wb_sunny,
     'mid_morning': Icons.local_cafe,
-    'lunch': Icons.lunch_dining,
-    'evening_snack': Icons.cookie,
-    'dinner': Icons.dinner_dining,
+    'lunch': Icons.restaurant,
+    'evening_snack': Icons.cake,
+    'dinner': Icons.restaurant_menu,
     'bedtime': Icons.bedtime,
   };
 
@@ -245,8 +245,6 @@ class _MotherDietScreenState extends State<MotherDietScreen> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: [
-                _buildAiAssistantSection(primary),
-                const SizedBox(height: 16),
                 _buildSummaryCard(plan, primary),
                 const SizedBox(height: 12),
                 if (plan['rationale'] != null &&
@@ -353,13 +351,13 @@ class _MotherDietScreenState extends State<MotherDietScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              _miniStat('Cal', '$calories', Icons.local_fire_department),
-              _miniStat('Iron', '${iron.toStringAsFixed(1)}mg', Icons.bolt),
+              _miniStat('Cal', '$calories', Icons.whatshot),
+              _miniStat('Iron', '${iron.toStringAsFixed(1)}mg', Icons.flash_on),
               _miniStat('Ca', '${calcium.toStringAsFixed(0)}mg', Icons.spa),
               _miniStat(
                 'Water',
                 '${(water / 1000).toStringAsFixed(1)}L',
-                Icons.water_drop,
+                Icons.local_drink,
               ),
             ],
           ),
@@ -689,7 +687,7 @@ class _MotherDietScreenState extends State<MotherDietScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.tips_and_updates, color: primary, size: 20),
+          Icon(Icons.lightbulb_outline, color: primary, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
