@@ -975,7 +975,7 @@ class _MomDashboardScreenState extends State<MomDashboardScreen> {
               children: [
                 Expanded(child: _summaryTile(Icons.child_care, '$kicksToday', 'Kicks', primaryPink, () => _push(KickCounterScreen(patientId: widget.patientId)))),
                 const SizedBox(width: 10),
-                Expanded(child: _summaryTile(Icons.bedtime, sleepToday > 0 ? sleepToday.toStringAsFixed(1) : '—', 'Sleep (h)', Colors.indigo, () => _push(SleepTimerScreen(patientId: widget.patientId)))),
+                Expanded(child: _summaryTile(Icons.nights_stay, sleepToday > 0 ? sleepToday.toStringAsFixed(1) : '—', 'Sleep (h)', Colors.indigo, () => _push(SleepTimerScreen(patientId: widget.patientId)))),
               ],
             ),
             const SizedBox(height: 10),
@@ -1422,7 +1422,7 @@ class _MomDashboardScreenState extends State<MomDashboardScreen> {
           _toolTile(Icons.calendar_today, 'Appointments', 'Schedule & manage doctor visits', Colors.brown.shade700, 'Appointments'),
           _toolTile(Icons.monitor_heart, 'Contraction timer', 'Time contractions accurately', Colors.red.shade700, 'Contractions'),
           _toolTile(Icons.child_friendly, 'Kick counter', 'Log your baby\'s movements', Colors.purple.shade700, 'Kick Counter'),
-          _toolTile(Icons.bedtime, 'Sleep tracker', 'Monitor your rest quality', Colors.indigo.shade700, 'Sleep'),
+          _toolTile(Icons.nights_stay, 'Sleep tracker', 'Monitor your rest quality', Colors.indigo.shade700, 'Sleep'),
           _toolTile(Icons.show_chart, 'Fetal growth', 'Ultrasound charts & measurements', Colors.deepOrange.shade700, 'Fetal growth'),
           _toolTile(Icons.help_outline, 'FAQ & AI assistant', 'Get answers to your questions', Colors.cyan.shade800, 'FAQ & Ask AI'),
           _toolTile(Icons.person_outline, 'My profile', 'Update your personal details', Colors.blueGrey.shade700, 'Profile'),

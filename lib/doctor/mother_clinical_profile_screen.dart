@@ -669,7 +669,7 @@ class _MotherClinicalProfileScreenState
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            _buildToolSection('Sleep Logs', Icons.bedtime, sleep, (item) {
+            _buildToolSection('Sleep Logs', Icons.nights_stay, sleep, (item) {
               return 'Date: ${item['session_date']?.toString().substring(0, 10)} - ${item['sleep_hours']} / ${item['goal_hours']} hrs';
             }),
             const Divider(),

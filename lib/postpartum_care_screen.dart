@@ -303,7 +303,7 @@ class _PostpartumCareScreenState extends State<PostpartumCareScreen> {
   Widget _buildRecoveryCards() {
     final cards = [
       (
-        icon: Icons.bedtime_outlined,
+        icon: Icons.nights_stay,
         color: const Color(0xFF9C27B0),
         title: 'Rest & recovery',
         body: 'Sleep when your baby sleeps. Stay hydrated and eat regularly. '

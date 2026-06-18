@@ -44,7 +44,7 @@ class _MissedNotificationsScreenState extends State<MissedNotificationsScreen> {
   IconData _iconFor(MissedNotificationType type) {
     switch (type) {
       case MissedNotificationType.sleep:
-        return Icons.bedtime_rounded;
+        return Icons.nights_stay;
       case MissedNotificationType.pill:
         return Icons.medication_rounded;
       case MissedNotificationType.hydration:

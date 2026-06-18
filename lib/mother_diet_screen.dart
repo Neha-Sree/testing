@@ -45,7 +45,7 @@ class _MotherDietScreenState extends State<MotherDietScreen> {
     'lunch': Icons.restaurant,
     'evening_snack': Icons.cake,
     'dinner': Icons.restaurant_menu,
-    'bedtime': Icons.bedtime,
+    'bedtime': Icons.nights_stay,
   };
 
   final MomApiService _api = MomApiService();

@@ -103,6 +103,12 @@ class AppHelper {
   async waitForAppReady() {
     logStep(`Launching Life Nest app and waiting for splash (${config.splashWaitMs}ms)`);
     await this.sleep(config.splashWaitMs);
+    try {
+      await this.driver.activateApp('com.example.my_app');
+      await this.sleep(1000);
+    } catch (e) {
+      logStep('Warning: Failed to activate app: ' + e.message, 'Warning');
+    }
   }
 
   /**

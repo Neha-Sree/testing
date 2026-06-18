@@ -3,7 +3,6 @@ const path = require('path');
 const ExcelJS = require('exceljs');
 
 const outputPath = path.join(__dirname, 'reports', 'selenium_11_topics_110_web_cases.xlsx');
-
 const topics = [
   {
     code: 'WEB-FUNC',
@@ -258,8 +257,9 @@ async function buildReport() {
   console.log(`Passed: ${total}`);
   console.log('Failed: 0');
 }
-
+ 
 buildReport().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
