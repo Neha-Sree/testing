@@ -1,0 +1,41 @@
+name: Selenium Web Automation Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  web-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Headless Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Install Dependencies
+        run: |
+          cd selenium_tests
+          npm install
+
+      - name: Run Selenium Web Tests
+        run: |
+          cd selenium_tests
+          npm run test-report
+
+      - name: Upload Web Excel Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Selenium-Web-Report
+          path: selenium_tests/reports/selenium_11_topics_110_web_cases.xlsx
