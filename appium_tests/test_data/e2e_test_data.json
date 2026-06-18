@@ -1,0 +1,22 @@
+{
+  "mother": {
+    "namePrefix": "Jane Doe",
+    "phone": "9876543210",
+    "password": "pass123",
+    "age": "27",
+    "weightKg": "62",
+    "weeksPregnant": "14",
+    "address": "123 Motherhood Blvd",
+    "emergencyContact": "John Doe 9999888877"
+  },
+  "doctor": {
+    "namePrefix": "Dr. House",
+    "phone": "8888888888",
+    "password": "docpass123"
+  },
+  "healthWorker": {
+    "namePrefix": "Nurse Brenda",
+    "phone": "7777777777",
+    "password": "workerpass123"
+  }
+}

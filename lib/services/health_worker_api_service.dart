@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/health_worker_models.dart';
+import 'auth_session_service.dart';
 import 'mom_api_base_url.dart';
 
 class HealthWorkerApiException implements Exception {
@@ -20,7 +21,7 @@ class HealthWorkerApiException implements Exception {
 /// `--dart-define=MOM_API_BASE_URL=...` flag works for the whole app.
 class HealthWorkerApiService {
   HealthWorkerApiService({http.Client? client})
-    : _client = client ?? http.Client();
+    : _client = client ?? AuthenticatedClient();
 
   final http.Client _client;
 

@@ -4,6 +4,8 @@
 /// (`backend/app/health_worker_endpoints.py`).
 library;
 
+import '../utils/pregnancy_week_utils.dart';
+
 class HealthWorker {
   HealthWorker({
     required this.workerId,
@@ -97,7 +99,7 @@ class AssignedMother {
         patientId: json['patient_id'] as String,
         fullName: json['full_name'] as String,
         age: (json['age'] as num?)?.toInt(),
-        pregnantWeeks: (json['pregnant_weeks'] as num?)?.toInt(),
+        pregnantWeeks: PregnancyWeekUtils.computeFromMother(json),
         dueDate: _parseDate(json['due_date']),
         bloodGroup: json['blood_group'] as String?,
         phone: json['phone'] as String?,

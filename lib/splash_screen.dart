@@ -47,15 +47,13 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                         ],
                       ),
-                      // ClipOval makes the image perfectly rounded!
                       child: ClipOval(
                         child: Image.asset(
-                          'assets/images/logo.jpg', // Updated to .jpg!
+                          'assets/images/logo.jpg',
                           width: 160,
                           height: 160,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
-                            // Fallback exactly in the same circle
                             return Container(
                               width: 160,
                               height: 160,

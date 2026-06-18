@@ -29,6 +29,7 @@ from .models import (
     MotherDietProfile,
     ReadingProgress,
 )
+from .pregnancy_utils import current_pregnant_weeks
 
 log = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ class MotherEduContext:
 def build_context(db: Session, patient_id: str) -> MotherEduContext:
     pid = patient_id.strip().upper()
     mother = db.query(Mother).filter(Mother.patient_id == pid).first()
-    weeks = mother.pregnant_weeks if mother else None
+    weeks = current_pregnant_weeks(mother)
     trimester = _trimester_from_weeks(weeks)
     profile = (
         db.query(MotherDietProfile).filter(MotherDietProfile.patient_id == pid).first()

@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'services/mom_api_base_url.dart';
 import 'services/mom_api_service.dart';
+import 'utils/pregnancy_week_utils.dart';
 
 class MotherProfileScreen extends StatefulWidget {
   const MotherProfileScreen({super.key, required this.patientId});
@@ -336,7 +337,7 @@ class _MotherProfileScreenState extends State<MotherProfileScreen> {
                     _buildSectionCard('Pregnancy Statistics', Icons.analytics, [
                       _buildStatRow(
                         'Current Week',
-                        '${_profileData?['pregnant_weeks'] ?? 'N/A'} weeks',
+                        '${PregnancyWeekUtils.computeFromMother(_profileData ?? {}) ?? _profileData?['pregnant_weeks'] ?? 'N/A'} weeks',
                       ),
                       _buildStatRow(
                         'Due Date',

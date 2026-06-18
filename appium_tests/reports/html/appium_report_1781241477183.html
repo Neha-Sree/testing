@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Life Nest Appium E2E Report</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; margin: 24px; color: #222; }
+    h1 { color: #ad1457; }
+    .cards { display: flex; gap: 12px; margin: 16px 0; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px 18px; min-width: 140px; background: #fff5f8; }
+    .card strong { display: block; font-size: 22px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 16px; }
+    th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
+    th { background: #f8bbd0; color: #4a148c; }
+    .pass { color: #2e7d32; font-weight: bold; }
+    .fail { color: #c62828; font-weight: bold; }
+    ul { margin: 4px 0 4px 20px; }
+  </style>
+</head>
+<body>
+  <h1>Life Nest Mobile Appium E2E Report</h1>
+  <p>Generated: 12/6/2026, 10:47:57 am</p>
+  <div class="cards">
+    <div class="card">Total<strong>3</strong></div>
+    <div class="card">Passed<strong>0</strong></div>
+    <div class="card">Failed<strong>3</strong></div>
+    <div class="card">Pass Rate<strong>0%</strong></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Test Case ID</th><th>Testcase Name</th><th>Role</th><th>Status</th><th>Duration</th><th>Error</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>APP-001</td>
+        <td>APP-E2E-001 Mother registration, onboarding, dashboard, and tracker features</td>
+        <td>Mother</td>
+        <td class="fail">Failed</td>
+        <td>124.88s</td>
+        <td>Timeout waiting for text/label &quot;Let's build your profile, Mom!&quot; to appear on screen.</td>
+      </tr>
+      <tr><td colspan="6"><ul><li><strong>Passed</strong> 05:11:41 - Application data cleared for clean E2E journey</li><li><strong>Passed</strong> 05:11:41 - Launching Life Nest app and waiting for splash (4500ms)</li><li><strong>Passed</strong> 05:11:47 - Open account creation flow</li><li><strong>Passed</strong> 05:11:49 - Verified screen element containing text/label: &quot;Please select your role to continue&quot;</li><li><strong>Passed</strong> 05:11:49 - Select Mother role</li><li><strong>Passed</strong> 05:11:50 - Verified screen element containing text/label: &quot;Welcome, Mother!&quot;</li><li><strong>Passed</strong> 05:12:00 - Enter full name: Jane Doe 79668</li><li><strong>Passed</strong> 05:12:09 - Enter phone number: 9876543210</li><li><strong>Passed</strong> 05:12:19 - Enter password</li><li><strong>Passed</strong> 05:12:21 - ADB reverse tunnel applied for backend access</li><li><strong>Failed</strong> 05:13:45 - Failure screenshot: mother_e2e_failure_1781241224788.png</li><li><strong>Failed</strong> 05:13:45 - Test execution failed: Timeout waiting for text/label &quot;Let's build your profile, Mom!&quot; to appear on screen.</li></ul></td></tr>
+    
+      <tr>
+        <td>APP-002</td>
+        <td>APP-E2E-002 Doctor registration and dashboard navigation</td>
+        <td>Doctor</td>
+        <td class="fail">Failed</td>
+        <td>125.26s</td>
+        <td>Timeout waiting for text/label &quot;Mothers&quot; to appear on screen.</td>
+      </tr>
+      <tr><td colspan="6"><ul><li><strong>Passed</strong> 05:13:46 - Application data cleared for clean E2E journey</li><li><strong>Passed</strong> 05:13:46 - Launching Life Nest app and waiting for splash (4500ms)</li><li><strong>Passed</strong> 05:13:53 - Open account creation flow</li><li><strong>Passed</strong> 05:13:54 - Verified screen element containing text/label: &quot;Please select your role to continue&quot;</li><li><strong>Passed</strong> 05:13:55 - Select Doctor role</li><li><strong>Passed</strong> 05:13:56 - Verified screen element containing text/label: &quot;Welcome, Doctor!&quot;</li><li><strong>Passed</strong> 05:14:05 - Enter full name: Dr. House 29960</li><li><strong>Passed</strong> 05:14:15 - Enter phone number: 8888888888</li><li><strong>Passed</strong> 05:14:24 - Enter password</li><li><strong>Passed</strong> 05:14:26 - ADB reverse tunnel applied for backend access</li><li><strong>Failed</strong> 05:15:50 - Failure screenshot: doctor_e2e_failure_1781241350133.png</li><li><strong>Failed</strong> 05:15:50 - Test execution failed: Timeout waiting for text/label &quot;Mothers&quot; to appear on screen.</li></ul></td></tr>
+    
+      <tr>
+        <td>APP-003</td>
+        <td>APP-E2E-003 Health Worker registration and dashboard actions</td>
+        <td>Health Worker</td>
+        <td class="fail">Failed</td>
+        <td>125.77s</td>
+        <td>Timeout waiting for text/label &quot;Assign mother&quot; to appear on screen.</td>
+      </tr>
+      <tr><td colspan="6"><ul><li><strong>Passed</strong> 05:15:51 - Application data cleared for clean E2E journey</li><li><strong>Passed</strong> 05:15:51 - Launching Life Nest app and waiting for splash (4500ms)</li><li><strong>Passed</strong> 05:15:58 - Open account creation flow</li><li><strong>Passed</strong> 05:15:59 - Verified screen element containing text/label: &quot;Please select your role to continue&quot;</li><li><strong>Passed</strong> 05:16:00 - Select Health Worker role</li><li><strong>Passed</strong> 05:16:01 - Verified screen element containing text/label: &quot;Welcome, Health Worker!&quot;</li><li><strong>Passed</strong> 05:16:11 - Enter full name: Nurse Brenda 12218</li><li><strong>Passed</strong> 05:16:20 - Enter phone number: 7777777777</li><li><strong>Passed</strong> 05:16:30 - Enter password</li><li><strong>Passed</strong> 05:16:32 - ADB reverse tunnel applied for backend access</li><li><strong>Failed</strong> 05:17:56 - Failure screenshot: health_worker_e2e_failure_1781241475921.png</li><li><strong>Failed</strong> 05:17:56 - Test execution failed: Timeout waiting for text/label &quot;Assign mother&quot; to appear on screen.</li></ul></td></tr>
+    </tbody>
+  </table>
+</body>
+</html>

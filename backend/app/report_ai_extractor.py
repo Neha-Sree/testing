@@ -27,6 +27,7 @@ from .clinical_terms import (
 from .database import get_db
 from .models import FetalGrowthData, HealthMetrics, LabTest, Mother, Report, ReportExtraction
 from .paths import REPORTS_DIR, resolve_stored_path
+from .pregnancy_utils import current_pregnant_weeks
 from .risk_engine import compute_risk
 
 log = logging.getLogger(__name__)
@@ -450,7 +451,7 @@ def _apply_extracted_data(report: Report, extracted: dict[str, Any], db: Session
         ],
     ):
         mother = db.query(Mother).filter(Mother.patient_id == pid).first()
-        pregnant_weeks = mother.pregnant_weeks if mother else None
+        pregnant_weeks = current_pregnant_weeks(mother)
         if pregnant_weeks is None:
             warnings.append("Fetal growth values were extracted, but pregnant_weeks is missing for this mother.")
         else:

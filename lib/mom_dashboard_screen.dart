@@ -25,6 +25,7 @@ import 'services/mom_api_service.dart';
 import 'services/reminder_coordinator.dart';
 import 'sleep_timer_screen.dart';
 import 'theme/mom_ui.dart';
+import 'utils/pregnancy_week_utils.dart';
 
 class MomDashboardScreen extends StatefulWidget {
   const MomDashboardScreen({super.key, required this.patientId});
@@ -165,11 +166,11 @@ class _MomDashboardScreenState extends State<MomDashboardScreen> {
         List<Map<String, dynamic>> appointments,
       })> _loadHomeTracking() async {
     final r = await Future.wait([
-      _momApiService.fetchKickHistory(widget.patientId),
-      _momApiService.fetchMotherMoodLogs(widget.patientId, limit: 20),
-      _momApiService.fetchSleepHistory(widget.patientId),
-      _momApiService.motherSymptoms(widget.patientId, limit: 30),
-      _momApiService.fetchAppointments(widget.patientId),
+      _optionalList(_momApiService.fetchKickHistory(widget.patientId)),
+      _optionalList(_momApiService.fetchMotherMoodLogs(widget.patientId, limit: 20)),
+      _optionalList(_momApiService.fetchSleepHistory(widget.patientId)),
+      _optionalList(_momApiService.motherSymptoms(widget.patientId, limit: 30)),
+      _optionalList(_momApiService.fetchAppointments(widget.patientId)),
     ]);
     return (
       kicks: (r[0] as List).cast<Map<String, dynamic>>(),
@@ -178,6 +179,16 @@ class _MomDashboardScreenState extends State<MomDashboardScreen> {
       symptoms: (r[3] as List).cast<Map<String, dynamic>>(),
       appointments: (r[4] as List).cast<Map<String, dynamic>>(),
     );
+  }
+
+  Future<List<Map<String, dynamic>>> _optionalList(
+    Future<List<Map<String, dynamic>>> request,
+  ) async {
+    try {
+      return await request;
+    } catch (_) {
+      return <Map<String, dynamic>>[];
+    }
   }
 
   Future<void> _refreshDashboard() async {
@@ -203,7 +214,7 @@ class _MomDashboardScreenState extends State<MomDashboardScreen> {
         }
         _babyDeliveryRequested = false;
       });
-    } on MomApiException {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
         _newbornRecord = null;
@@ -385,7 +396,7 @@ class _MomDashboardScreenState extends State<MomDashboardScreen> {
             final data = snapshot.data ?? {};
             final fullName = (data['full_name'] as String?)?.trim();
             final greeting = (fullName == null || fullName.isEmpty) ? 'there' : fullName;
-            final weeks = (data['pregnant_weeks'] as num?)?.toInt() ?? 24;
+            final weeks = PregnancyWeekUtils.computeFromMother(data) ?? 24;
             final babyInfo = _getBabySizeInfo(weeks);
             final doctorId = (data['doctor_id'] as String?)?.trim() ?? '';
 

@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from .chat_websocket import broadcast_messages_read, broadcast_new_message
 from .database import Base, engine, get_db
 from .models import (DietLog, FetalGrowthData, HydrationLog, StepsLog, HealthMetrics, ChatRoom, ChatMessage, ChatNotification, Mother)
+from .pregnancy_utils import current_pregnant_weeks
 
 # === DIET LOG ENDPOINTS ===
 
@@ -316,7 +317,7 @@ def get_patient_dashboard_data(patient_id: str, db: Session = Depends(get_db)):
             "age": mother.age,
             "weight_kg": mother.weight_kg,
             "blood_group": mother.blood_group,
-            "pregnant_weeks": mother.pregnant_weeks,
+            "pregnant_weeks": current_pregnant_weeks(mother),
             "due_date": mother.due_date.isoformat() if mother.due_date else None,
             "doctor_id": mother.doctor_id,
         },

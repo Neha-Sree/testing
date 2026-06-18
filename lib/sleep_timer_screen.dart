@@ -213,42 +213,38 @@ class _SleepTimerScreenState extends State<SleepTimerScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Hero Image
+                    // Hero banner
                     ClipRRect(
                       borderRadius: BorderRadius.circular(25),
                       child: Container(
                         height: 180,
                         color: cardColor,
-                        child: Image.asset(
-                          'assets/images/sleep_timer.jpg',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.nightlight_round,
-                                  size: 60,
-                                  color: accentColor,
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Sleep Tracker',
-                                  style: TextStyle(
-                                    color: Colors.green.withAlpha(25),
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                Text(
-                                  '(Add sleep_timer.jpg to assets/images)',
-                                  style: TextStyle(
-                                    color: Colors.white.withAlpha(76),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.nightlight_round,
+                              size: 60,
+                              color: accentColor,
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Sleep Tracker',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Rest well, mama',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

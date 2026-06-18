@@ -1,0 +1,7 @@
+{
+  "baseUrl": "http://localhost:8000",
+  "mother": "NO_TOKEN_REQUIRED",
+  "doctor": "NO_TOKEN_REQUIRED",
+  "health_worker": "NO_TOKEN_REQUIRED",
+  "notes": "This API has no JWT/Bearer auth. All endpoints are publicly accessible. Auth is only checked via /auth/login which returns no token."
+}

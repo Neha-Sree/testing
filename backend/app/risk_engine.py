@@ -20,6 +20,7 @@ from .clinical_terms import (
     normalize_swelling,
 )
 from .models import FetalGrowthData, HealthMetrics, LabTest, MoodLog, Mother, RiskAssessment, SymptomLog
+from .pregnancy_utils import current_pregnant_weeks
 
 
 _LEVEL_POINTS = {"green": 0, "yellow": 1, "red": 3, "critical": 5}
@@ -373,7 +374,7 @@ def compute_risk(db: Session, patient_id: str, *, persist: bool = False) -> Risk
     pid = patient_id.strip().upper()
 
     mother: Optional[Mother] = db.query(Mother).filter(Mother.patient_id == pid).first()
-    mother_weeks = mother.pregnant_weeks if mother else None
+    mother_weeks = current_pregnant_weeks(mother)
 
     latest_metrics: Optional[HealthMetrics] = (
         db.query(HealthMetrics)

@@ -34,6 +34,7 @@ from .models import (
     Mother,
     MotherDietProfile,
 )
+from .pregnancy_utils import current_pregnant_weeks
 
 log = logging.getLogger(__name__)
 
@@ -198,7 +199,7 @@ def compile_constraints(db: Session, patient_id: str) -> DietConstraints:
         .all()
     )
 
-    trimester = _trimester_from_weeks(mother.pregnant_weeks if mother else None)
+    trimester = _trimester_from_weeks(current_pregnant_weeks(mother))
     constraints = DietConstraints(
         trimester=trimester,
         diet_type=(profile.diet_type if profile and profile.diet_type else "veg"),
@@ -210,7 +211,7 @@ def compile_constraints(db: Session, patient_id: str) -> DietConstraints:
     # strongly prefers trimester-matched meals but can fall back gracefully.
     constraints.preferred_tags.append(f"trimester_{trimester}")
     constraints.rationale.append(
-        f"Trimester {trimester} based on {mother.pregnant_weeks if mother else '?'} weeks"
+        f"Trimester {trimester} based on {current_pregnant_weeks(mother) if mother else '?'} weeks"
     )
 
     # ---- Allergies: merge Mother.allergies + MotherDietProfile.allergies ----

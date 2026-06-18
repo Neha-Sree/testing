@@ -8,13 +8,28 @@ from uuid import uuid4
 
 from . import env as _env  # noqa: F401 — loads backend/.env before other app imports
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, UploadFile, Body, WebSocket
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile, Body, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from .database import Base, engine, get_db
+from .pregnancy_utils import (
+    current_pregnant_weeks,
+    ensure_due_date_from_weeks,
+    infer_due_date_from_weeks,
+)
+from .auth import (
+    AuthUser,
+    create_access_token,
+    decode_access_token,
+    hash_password,
+    needs_password_upgrade,
+    role_from_user_id,
+    verify_password,
+)
 from .models import (ContractionSession, KickSession, Mother, SleepSession, PillPrescription, PillIntake, Appointment,
                      DietLog, FetalGrowthData, HydrationLog, StepsLog, HealthMetrics, ChatRoom, ChatMessage, ChatNotification,
                      HealthWorker, Doctor, HomeVisit, LabTest, Report, ReportExtraction, RiskAssessment,
@@ -80,6 +95,149 @@ from .database import SessionLocal
 
 app = FastAPI(title="Life Nest Backend")
 
+
+_PUBLIC_ROUTES = {
+    ("GET", "/health"),
+    ("POST", "/auth/login"),
+    ("POST", "/mothers/onboarding"),
+    ("POST", "/doctors/onboarding"),
+    ("POST", "/health-workers/onboarding"),
+    ("GET", "/education/articles"),
+    ("GET", "/education/faqs"),
+    ("GET", "/diet/meal-templates"),
+}
+
+_PUBLIC_PREFIXES = ("/docs", "/redoc", "/openapi.json", "/uploads/")
+
+
+def _json_error(status_code: int, detail: str) -> JSONResponse:
+    return JSONResponse(status_code=status_code, content={"detail": detail})
+
+
+def _path_parts(path: str) -> list[str]:
+    return [part for part in path.strip("/").split("/") if part]
+
+
+def _bearer_user(request: Request) -> AuthUser | None:
+    header = request.headers.get("authorization", "")
+    scheme, _, token = header.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        return None
+    return decode_access_token(token)
+
+
+def _mother_for_patient(db: Session, patient_id: str) -> Mother | None:
+    return db.query(Mother).filter(Mother.patient_id == patient_id.strip().upper()).first()
+
+
+def _can_access_patient(db: Session, user: AuthUser, patient_id: str) -> bool:
+    pid = patient_id.strip().upper()
+    if user.role == "mother":
+        return user.user_id == pid
+    mother = _mother_for_patient(db, pid)
+    if mother is None:
+        # Let the endpoint return its normal 404/empty result while still requiring auth.
+        return True
+    if user.role == "doctor":
+        return (mother.doctor_id or "").strip().upper() == user.user_id
+    if user.role == "health_worker":
+        return (mother.health_worker_id or "").strip().upper() == user.user_id
+    return False
+
+
+def _authorized_for_path(db: Session, user: AuthUser, method: str, path: str) -> bool:
+    parts = _path_parts(path)
+    if not parts:
+        return True
+
+    if parts[0] == "doctor" and len(parts) >= 2:
+        return user.role == "doctor" and user.user_id == parts[1].upper()
+
+    if parts[0] == "doctors" and len(parts) >= 2:
+        return user.role == "doctor" and user.user_id == parts[1].upper()
+
+    if parts[0] == "health-workers" and len(parts) >= 2:
+        return user.role == "health_worker" and user.user_id == parts[1].upper()
+
+    if parts[0] == "home-visits":
+        if len(parts) >= 3 and parts[1] == "health-worker":
+            return user.role == "health_worker" and user.user_id == parts[2].upper()
+        if len(parts) >= 3 and parts[1] == "patient":
+            return _can_access_patient(db, user, parts[2])
+        return user.role in {"doctor", "health_worker"}
+
+    if parts[0] in {"lab-tests", "reports", "risk", "health-metrics"} and len(parts) >= 2:
+        return _can_access_patient(db, user, parts[1])
+
+    if parts[0] == "hydration" and len(parts) >= 3 and parts[1] == "logs":
+        return _can_access_patient(db, user, parts[2])
+
+    if parts[0] == "diet":
+        if len(parts) >= 3 and parts[1] in {"profile", "restrictions", "doctor-summary"}:
+            if parts[1] in {"restrictions", "doctor-summary"} and method in {"POST", "DELETE"}:
+                return user.role == "doctor"
+            return _can_access_patient(db, user, parts[2])
+        if parts[1] in {"plan"} and len(parts) >= 3 and parts[2] not in {"regenerate", "complete-meal"}:
+            return _can_access_patient(db, user, parts[2])
+        if parts[1] == "ai-assistant-plan":
+            if len(parts) >= 4 and parts[2] == "latest":
+                return _can_access_patient(db, user, parts[3])
+            return user.role == "mother"
+        return user.role in {"mother", "doctor"}
+
+    if parts[0] == "education":
+        if len(parts) >= 4 and parts[1] == "articles" and parts[2] == "recommended":
+            return _can_access_patient(db, user, parts[3])
+        if len(parts) >= 4 and parts[1] == "tips" and parts[2] == "today":
+            return _can_access_patient(db, user, parts[3])
+        if len(parts) >= 3 and parts[1] in {"bookmarks", "streak"}:
+            return user.user_id == parts[2].upper() or user.role == "doctor"
+        if len(parts) >= 4 and parts[1] == "articles" and parts[3] == "bookmark":
+            return user.role == "mother"
+        if method == "POST":
+            return user.role == "doctor"
+
+    if parts[0] == "mothers" and len(parts) >= 2:
+        return _can_access_patient(db, user, parts[1])
+
+    if parts[0] == "mothers" and len(parts) == 1:
+        return user.role in {"doctor", "health_worker"}
+
+    if parts[0] == "chat":
+        return user.role in {"mother", "doctor", "health_worker"}
+
+    if parts[0] in {"deliveries", "newborns", "emergencies"}:
+        return user.role == "doctor"
+
+    if parts[0] in {"fetal-growth"}:
+        return user.role in {"doctor", "health_worker"}
+
+    return True
+
+
+@app.middleware("http")
+async def authenticate_and_authorize(request: Request, call_next):
+    method = request.method.upper()
+    path = request.url.path.rstrip("/") or "/"
+    if (method, path) in _PUBLIC_ROUTES or any(path.startswith(prefix) for prefix in _PUBLIC_PREFIXES):
+        return await call_next(request)
+    if method == "GET" and re.fullmatch(r"/education/articles/\d+", path):
+        return await call_next(request)
+
+    user = _bearer_user(request)
+    if user is None:
+        return _json_error(401, "Authentication required")
+
+    db = SessionLocal()
+    try:
+        if not _authorized_for_path(db, user, method, path):
+            return _json_error(403, "Not authorized for this resource")
+    finally:
+        db.close()
+
+    request.state.user = user
+    return await call_next(request)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -94,28 +252,64 @@ class LoginRequest(BaseModel):
     user_id: str
     password: str
 
+
+_LOGIN_ATTEMPTS: dict[str, list[float]] = {}
+_LOGIN_LIMIT = 10
+_LOGIN_WINDOW_SECONDS = 60
+
+
+def _check_login_rate_limit(user_id: str) -> None:
+    now = datetime.utcnow().timestamp()
+    key = user_id.strip().upper() or "UNKNOWN"
+    attempts = [ts for ts in _LOGIN_ATTEMPTS.get(key, []) if now - ts < _LOGIN_WINDOW_SECONDS]
+    if len(attempts) >= _LOGIN_LIMIT:
+        _LOGIN_ATTEMPTS[key] = attempts
+        raise HTTPException(status_code=429, detail="Too many login attempts")
+    attempts.append(now)
+    _LOGIN_ATTEMPTS[key] = attempts
+
+
+def _clear_login_rate_limit(user_id: str) -> None:
+    _LOGIN_ATTEMPTS.pop(user_id.strip().upper(), None)
+
 @app.post("/auth/login")
 def login(req: LoginRequest, db: Session = Depends(get_db)):
     uid = req.user_id.strip().upper()
     pwd = req.password
+    _check_login_rate_limit(uid)
 
     if uid.startswith("MUM"):
         user = db.query(Mother).filter(Mother.patient_id == uid).first()
+        role = "mother"
     elif uid.startswith("HWN"):
         user = db.query(HealthWorker).filter(HealthWorker.worker_id == uid).first()
+        role = "health_worker"
     elif uid.startswith("DOC"):
         user = db.query(Doctor).filter(Doctor.doctor_id == uid).first()
+        role = "doctor"
     else:
         raise HTTPException(status_code=400, detail="Invalid user ID prefix")
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # In a real app, verify hashed password
-    if getattr(user, "password", "password123") != pwd:
+    stored_password = getattr(user, "password", None)
+    if not verify_password(stored_password, pwd):
         raise HTTPException(status_code=401, detail="Invalid password")
 
-    return {"message": "Login successful", "user_id": uid}
+    if needs_password_upgrade(stored_password):
+        user.password = hash_password(pwd)
+        db.commit()
+
+    _clear_login_rate_limit(uid)
+
+    return {
+        "message": "Login successful",
+        "user_id": uid,
+        "role": role,
+        "access_token": create_access_token(uid, role),
+        "token_type": "bearer",
+    }
 
 Base.metadata.create_all(bind=engine)
 
@@ -141,7 +335,7 @@ def _ensure_mothers_columns():
         if "allergies" not in existing_columns:
             connection.execute(text("ALTER TABLE mothers ADD COLUMN allergies VARCHAR"))
         if "password" not in existing_columns:
-            connection.execute(text("ALTER TABLE mothers ADD COLUMN password VARCHAR DEFAULT 'password123'"))
+            connection.execute(text("ALTER TABLE mothers ADD COLUMN password VARCHAR"))
 
 
 def _ensure_doctors_columns():
@@ -151,7 +345,7 @@ def _ensure_doctors_columns():
         if "phone" not in cols:
             connection.execute(text("ALTER TABLE doctors ADD COLUMN phone VARCHAR"))
         if "password" not in cols:
-            connection.execute(text("ALTER TABLE doctors ADD COLUMN password VARCHAR DEFAULT 'password123'"))
+            connection.execute(text("ALTER TABLE doctors ADD COLUMN password VARCHAR"))
 
 
 def _ensure_health_workers_columns():
@@ -165,7 +359,7 @@ def _ensure_health_workers_columns():
         if "profile_image_path" not in cols:
             connection.execute(text("ALTER TABLE health_workers ADD COLUMN profile_image_path VARCHAR"))
         if "password" not in cols:
-            connection.execute(text("ALTER TABLE health_workers ADD COLUMN password VARCHAR DEFAULT 'password123'"))
+            connection.execute(text("ALTER TABLE health_workers ADD COLUMN password VARCHAR"))
 
 
 def _ensure_lab_tests_columns():
@@ -372,8 +566,13 @@ async def create_or_update_mother_onboarding(
             shutil.copyfileobj(profile_image.file, output_file)
         stored_image_path = str(target_path)
 
+    if parsed_due_date is None and pregnant_weeks is not None:
+        parsed_due_date = infer_due_date_from_weeks(pregnant_weeks)
+
     mother = db.query(Mother).filter(Mother.patient_id == patient_id).first()
     if mother is None:
+        if not password:
+            raise HTTPException(status_code=400, detail="password is required")
         mother = Mother(
             patient_id=patient_id,
             full_name=full_name,
@@ -387,7 +586,7 @@ async def create_or_update_mother_onboarding(
             address=address,
             emergency_contact=emergency_contact,
             allergies=allergies,
-            password=password or "password123",
+            password=hash_password(password),
         )
         db.add(mother)
     else:
@@ -396,13 +595,21 @@ async def create_or_update_mother_onboarding(
         mother.weight_kg = weight_kg
         mother.blood_group = blood_group
         mother.pregnant_weeks = pregnant_weeks
-        mother.due_date = parsed_due_date
+        if parsed_due_date is not None:
+            mother.due_date = parsed_due_date
+        elif pregnant_weeks is not None:
+            mother.due_date = infer_due_date_from_weeks(
+                pregnant_weeks,
+                anchor=mother.created_at or datetime.utcnow(),
+            )
         mother.phone = phone
         mother.address = address
         mother.emergency_contact = emergency_contact
         mother.allergies = allergies
         if password is not None:
-            mother.password = password
+            if not password:
+                raise HTTPException(status_code=400, detail="password is required")
+            mother.password = hash_password(password)
         if stored_image_path is not None:
             mother.profile_image_path = stored_image_path
 
@@ -416,7 +623,7 @@ async def create_or_update_mother_onboarding(
         "age": mother.age,
         "weight_kg": mother.weight_kg,
         "blood_group": mother.blood_group,
-        "pregnant_weeks": mother.pregnant_weeks,
+        "pregnant_weeks": current_pregnant_weeks(mother),
         "due_date": mother.due_date.isoformat() if mother.due_date else None,
         "profile_image_path": mother.profile_image_path,
         "phone": mother.phone,
@@ -433,6 +640,11 @@ def get_mother_by_patient_id(patient_id: str, db: Session = Depends(get_db)):
     if mother is None:
         raise HTTPException(status_code=404, detail="Mother record not found")
 
+    if mother.due_date is None and mother.pregnant_weeks is not None:
+        ensure_due_date_from_weeks(mother)
+        db.commit()
+        db.refresh(mother)
+
     return {
         "id": mother.id,
         "patient_id": mother.patient_id,
@@ -440,7 +652,7 @@ def get_mother_by_patient_id(patient_id: str, db: Session = Depends(get_db)):
         "age": mother.age,
         "weight_kg": mother.weight_kg,
         "blood_group": mother.blood_group,
-        "pregnant_weeks": mother.pregnant_weeks,
+        "pregnant_weeks": current_pregnant_weeks(mother),
         "due_date": mother.due_date.isoformat() if mother.due_date else None,
         "profile_image_path": mother.profile_image_path,
         "doctor_id": mother.doctor_id,
@@ -463,7 +675,7 @@ def list_mothers(db: Session = Depends(get_db)):
             "age": mother.age,
             "weight_kg": mother.weight_kg,
             "blood_group": mother.blood_group,
-            "pregnant_weeks": mother.pregnant_weeks,
+            "pregnant_weeks": current_pregnant_weeks(mother),
             "due_date": mother.due_date.isoformat() if mother.due_date else None,
             "profile_image_path": mother.profile_image_path,
             "doctor_id": mother.doctor_id,
@@ -492,11 +704,13 @@ def create_or_update_doctor_onboarding(
 
     doctor = db.query(Doctor).filter(Doctor.doctor_id == normalized_id).first()
     if doctor is None:
+        if not password:
+            raise HTTPException(status_code=400, detail="password is required")
         doctor = Doctor(
             doctor_id=normalized_id,
             full_name=full_name,
             phone=phone,
-            password=password or "password123",
+            password=hash_password(password),
         )
         db.add(doctor)
     else:
@@ -504,7 +718,7 @@ def create_or_update_doctor_onboarding(
         if phone is not None:
             doctor.phone = phone
         if password is not None:
-            doctor.password = password
+            doctor.password = hash_password(password)
 
     db.commit()
     db.refresh(doctor)
@@ -549,7 +763,10 @@ def update_mother_profile(
             pass
     if "pregnant_weeks" in profile_data and profile_data["pregnant_weeks"] not in (None, ""):
         try:
-            mother.pregnant_weeks = int(profile_data["pregnant_weeks"])
+            new_weeks = int(profile_data["pregnant_weeks"])
+            mother.pregnant_weeks = new_weeks
+            if "due_date" not in profile_data or not profile_data["due_date"]:
+                mother.due_date = infer_due_date_from_weeks(new_weeks)
         except (TypeError, ValueError):
             pass
     if "due_date" in profile_data and profile_data["due_date"]:
@@ -576,7 +793,7 @@ def update_mother_profile(
         "age": mother.age,
         "weight_kg": mother.weight_kg,
         "blood_group": mother.blood_group,
-        "pregnant_weeks": mother.pregnant_weeks,
+        "pregnant_weeks": current_pregnant_weeks(mother),
         "due_date": mother.due_date.isoformat() if mother.due_date else None,
         "profile_image_path": mother.profile_image_path,
         "doctor_id": mother.doctor_id,
@@ -628,7 +845,7 @@ def get_patients_by_doctor(doctor_id: str, db: Session = Depends(get_db)):
             "full_name": mother.full_name,
             "age": mother.age,
             "blood_group": mother.blood_group,
-            "pregnant_weeks": mother.pregnant_weeks,
+            "pregnant_weeks": current_pregnant_weeks(mother),
             "due_date": mother.due_date.isoformat() if mother.due_date else None,
             "created_at": mother.created_at.isoformat() if mother.created_at else None,
         }

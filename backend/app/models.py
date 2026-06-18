@@ -20,7 +20,7 @@ class Mother(Base):
     phone = Column(String(20), nullable=True)
     emergency_contact = Column(String(20), nullable=True)
     allergies = Column(String(500), nullable=True)
-    password = Column(String(255), nullable=True, default="password123")
+    password = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 
@@ -33,7 +33,7 @@ class HealthWorker(Base):
     phone = Column(String(20), nullable=True)
     region = Column(String(120), nullable=True)
     profile_image_path = Column(String(255), nullable=True)
-    password = Column(String(255), nullable=True, default="password123")
+    password = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 
@@ -44,7 +44,7 @@ class Doctor(Base):
     doctor_id = Column(String(50), unique=True, nullable=False, index=True)
     full_name = Column(String(120), nullable=False)
     phone = Column(String(20), nullable=True)
-    password = Column(String(255), nullable=True, default="password123")
+    password = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
 

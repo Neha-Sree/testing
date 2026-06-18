@@ -15,6 +15,7 @@ from typing import Any, Optional
 from sqlalchemy.orm import Session
 
 from .diet_engine import MEAL_SLOTS, generate_daily_plan, _trimester_from_weeks
+from .pregnancy_utils import current_pregnant_weeks
 from .models import (
     AiDietAssistantPlan,
     DoctorDietRestriction,
@@ -141,7 +142,7 @@ def collect_patient_context(db: Session, patient_id: str) -> dict[str, Any]:
         .first()
     )
 
-    pregnant_weeks = mother.pregnant_weeks if mother else None
+    pregnant_weeks = current_pregnant_weeks(mother)
     trimester = _trimester_from_weeks(pregnant_weeks)
     allergies = _merge_allergies(mother, profile)
     complications = _complications(profile, risk)

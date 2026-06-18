@@ -1,0 +1,619 @@
+{
+  "completed": false,
+  "routes": [
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/auth/login",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/onboarding",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/doctors/onboarding",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "PUT",
+      "path": "/mothers/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/profile-image",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctors/{doctor_id}/patients",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/doctors/{doctor_id}/assign-patient/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/contractions",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/contractions",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/sleep",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/sleep",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/kicks",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/kicks",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/prescriptions",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/prescriptions",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/pill-intake",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/pill-intake",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/pill-history",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/appointments",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/appointments",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/chat/room",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/chat/message",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/chat/messages/{room_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/chat/rooms/{user_id}/{user_type}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/chat/read",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "WS",
+      "path": "/ws/chat/{room_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/health-workers/{health_worker_id}/appointments",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "PUT",
+      "path": "/appointments/{appointment_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/hydration/logs",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/hydration/logs/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/health-workers/onboarding",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/health-workers/{worker_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/health-workers/{worker_id}/assign-mother/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/health-workers/{worker_id}/mothers",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/home-visits",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "PUT",
+      "path": "/home-visits/{visit_id}/complete",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/home-visits/health-worker/{worker_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/home-visits/patient/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/lab-tests",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/lab-tests/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/fetal-growth",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/reports/upload",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/reports/upload-and-extract",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/reports/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/risk/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/diet/profile/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/diet/profile",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/diet/restrictions",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/diet/restrictions/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "DELETE",
+      "path": "/diet/restrictions/{restriction_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/diet/plan/today/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/diet/plan/regenerate",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/diet/plan/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/diet/plan/complete-meal",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/diet/doctor-summary/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/diet/meal-templates",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/diet/ai-assistant-plan/latest/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/diet/ai-assistant-plan/generate",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/education/articles",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/education/articles/recommended/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/education/articles/{article_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/education/articles",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/education/articles/{article_id}/approve",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/education/articles/{article_id}/bookmark",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/education/bookmarks/{user_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/education/progress",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/education/streak/{user_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/education/faqs",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/education/faqs",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/education/ask",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/education/tips/today/{patient_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/overview",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/risk-feed",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/today-appointments",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/near-delivery",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/missed-medications",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/analytics",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/profile-bundle",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/symptoms",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/symptoms",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/mood-logs",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/mothers/{patient_id}/mood-logs",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/fetal-growth",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/deliveries",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/delivery",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/deliveries",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/newborns",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/newborns/{newborn_id}",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/mothers/{patient_id}/newborn",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/newborns/{newborn_id}/vitals",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/newborns/{newborn_id}/vitals",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/newborns/{newborn_id}/vaccinations",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/newborns/{newborn_id}/vaccinations",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/newborns",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/emergencies",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/doctor/{doctor_id}/emergencies",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/emergencies/{alert_id}/acknowledge",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/emergencies/{alert_id}/resolve",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "POST",
+      "path": "/health-metrics",
+      "source": "main.py"
+    },
+    {
+      "expected_access": "public",
+      "method": "GET",
+      "path": "/health-metrics/{patient_id}",
+      "source": "main.py"
+    }
+  ],
+  "timestamp": "2026-06-13T04:13:49.984335Z",
+  "total_tests": 0
+}

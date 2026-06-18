@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import 'auth_session_service.dart';
 import 'mom_api_base_url.dart';
 
 class MomApiException implements Exception {
@@ -17,7 +19,7 @@ class MomApiException implements Exception {
 }
 
 class MomApiService {
-  MomApiService({http.Client? client}) : _client = client ?? http.Client();
+  MomApiService({http.Client? client}) : _client = client ?? AuthenticatedClient();
 
   final http.Client _client;
 
@@ -38,7 +40,18 @@ class MomApiService {
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final token = data['access_token']?.toString();
+      final role = data['role']?.toString();
+      final normalizedUserId = data['user_id']?.toString() ?? userId.trim().toUpperCase();
+      if (token != null && token.isNotEmpty && role != null && role.isNotEmpty) {
+        await AuthSessionService.save(
+          accessToken: token,
+          userId: normalizedUserId,
+          role: role,
+        );
+      }
+      return data;
     }
 
     String message = 'Login failed';
@@ -84,16 +97,24 @@ class MomApiService {
 
     late final http.Response response;
     try {
-      final streamedResponse = await _client.send(request);
+      final streamedResponse = await _client
+          .send(request)
+          .timeout(const Duration(seconds: 20));
       response = await http.Response.fromStream(streamedResponse);
     } on SocketException {
       throw MomApiException(
         'Cannot reach backend. Check MOM_API_BASE_URL and backend server.',
       );
+    } on TimeoutException {
+      throw MomApiException(
+        'Backend request timed out. Check phone network, adb reverse, and MOM_API_BASE_URL.',
+      );
     }
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      await login(userId: userId, password: password);
+      return data;
     }
 
     String message = 'Failed to create account';

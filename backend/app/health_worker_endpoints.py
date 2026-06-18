@@ -18,8 +18,10 @@ from fastapi import Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from .database import get_db
+from .auth import hash_password
 from .models import FetalGrowthData, HealthWorker, HomeVisit, LabTest, Mother, Report
 from .paths import HW_PROFILES_DIR, REPORTS_DIR, VISITS_DIR
+from .pregnancy_utils import current_pregnant_weeks
 from .risk_engine import compute_risk
 
 
@@ -125,11 +127,13 @@ def upsert_health_worker(
 
     worker = db.query(HealthWorker).filter(HealthWorker.worker_id == worker_id).first()
     if worker is None:
+        if not password:
+            raise HTTPException(status_code=400, detail="password is required")
         worker = HealthWorker(
             worker_id=worker_id,
             full_name=full_name,
             phone=phone,
-            password=password or "password123",
+            password=hash_password(password),
             region=region,
             profile_image_path=stored_image_path,
         )
@@ -139,7 +143,9 @@ def upsert_health_worker(
         if phone is not None:
             worker.phone = phone
         if password is not None:
-            worker.password = password
+            if not password:
+                raise HTTPException(status_code=400, detail="password is required")
+            worker.password = hash_password(password)
         if region is not None:
             worker.region = region
         if stored_image_path is not None:
@@ -196,7 +202,7 @@ def list_assigned_mothers(worker_id: str, db: Session = Depends(get_db)):
                 "patient_id": mother.patient_id,
                 "full_name": mother.full_name,
                 "age": mother.age,
-                "pregnant_weeks": mother.pregnant_weeks,
+                "pregnant_weeks": current_pregnant_weeks(mother),
                 "due_date": mother.due_date.isoformat() if mother.due_date else None,
                 "blood_group": mother.blood_group,
                 "phone": mother.phone,

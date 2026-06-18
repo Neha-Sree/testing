@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/education_models.dart';
+import 'auth_session_service.dart';
 import 'mom_api_base_url.dart';
 
 class EducationApiException implements Exception {
@@ -14,7 +15,7 @@ class EducationApiException implements Exception {
 
 /// Thin REST client for the `/education/*` backend.
 class EducationApiService {
-  EducationApiService({http.Client? client}) : _client = client ?? http.Client();
+  EducationApiService({http.Client? client}) : _client = client ?? AuthenticatedClient();
 
   final http.Client _client;
 

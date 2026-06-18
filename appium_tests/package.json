@@ -1,0 +1,24 @@
+{
+  "name": "life-nest-appium-tests",
+  "version": "1.0.0",
+  "description": "E2E Appium Android Tests for the Life Nest Motherhood Application",
+  "main": "run_tests.js",
+  "scripts": {
+    "test": "node run_tests.js",
+    "test:pom": "node run_pom_tests.js",
+    "test:mocha": "mocha test_e2e.js --timeout 240000 --exit",
+    "test:mocha:pom": "mocha tests/e2e_pom.test.js --timeout 300000 --exit",
+    "appium": "appium",
+    "appium:doctor": "appium driver doctor uiautomator2",
+    "appium:install-driver": "appium driver install uiautomator2"
+  },
+  "dependencies": {
+    "webdriverio": "^8.39.0",
+    "exceljs": "^4.4.0"
+  },
+  "devDependencies": {
+    "appium": "^2.11.0",
+    "appium-uiautomator2-driver": "^3.7.0",
+    "mocha": "^10.4.0"
+  }
+}

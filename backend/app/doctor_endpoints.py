@@ -15,6 +15,7 @@ from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from .database import get_db
+from .pregnancy_utils import current_pregnant_weeks
 from .models import (
     Appointment,
     DeliveryRecord,
@@ -63,7 +64,7 @@ def _mother_public(m: Mother) -> dict[str, Any]:
         "full_name": m.full_name,
         "age": m.age,
         "blood_group": m.blood_group,
-        "pregnant_weeks": m.pregnant_weeks,
+        "pregnant_weeks": current_pregnant_weeks(m),
         "due_date": m.due_date.isoformat() if m.due_date else None,
         "doctor_id": m.doctor_id,
         "health_worker_id": m.health_worker_id,
@@ -350,7 +351,7 @@ def doctor_today_appointments(doctor_id: str, db: Session = Depends(get_db)):
             "patient_id": a.patient_id,
             "mother_name": m.full_name if m else a.patient_id,
             "blood_group": m.blood_group if m else None,
-            "pregnant_weeks": m.pregnant_weeks if m else None,
+            "pregnant_weeks": current_pregnant_weeks(m) if m else None,
             "appointment_date": a.appointment_date.isoformat() if a.appointment_date else None,
             "appointment_time": a.appointment_time,
             "duration_minutes": a.duration_minutes,
@@ -478,7 +479,7 @@ def doctor_analytics(doctor_id: str, db: Session = Depends(get_db)):
 
     trimester_buckets = {"1": 0, "2": 0, "3": 0, "unknown": 0}
     for m in _assigned_mothers(db, did):
-        t = _trimester(m.pregnant_weeks)
+        t = _trimester(current_pregnant_weeks(m))
         trimester_buckets[str(t) if t else "unknown"] = trimester_buckets.get(str(t) if t else "unknown", 0) + 1
 
     return {
@@ -582,7 +583,7 @@ def mother_profile_bundle(patient_id: str, db: Session = Depends(get_db)):
 
     return {
         "mother": _mother_public(m),
-        "trimester": _trimester(m.pregnant_weeks),
+        "trimester": _trimester(current_pregnant_weeks(m)),
         "latest_health_metrics": _hm(latest_metrics),
         "latest_lab": _lb(latest_lab),
         "symptoms": [
@@ -793,7 +794,7 @@ def mother_fetal_growth_series(patient_id: str, db: Session = Depends(get_db)):
         .all()
     ):
         m = db.query(Mother).filter(Mother.patient_id == pid).first()
-        wk = m.pregnant_weeks if m else None
+        wk = current_pregnant_weeks(m) if m else None
         if wk and wk not in metrics_by_week:
             metrics_by_week[wk] = h
 
@@ -825,7 +826,7 @@ def mother_fetal_growth_series(patient_id: str, db: Session = Depends(get_db)):
     )
     if latest_lab and (latest_lab.femur_length_cm or latest_lab.head_circumference_cm):
         m = db.query(Mother).filter(Mother.patient_id == pid).first()
-        wk = m.pregnant_weeks if m else None
+        wk = current_pregnant_weeks(m) if m else None
         if wk:
             series.append(
                 {
