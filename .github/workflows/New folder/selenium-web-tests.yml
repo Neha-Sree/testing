@@ -7,34 +7,40 @@ on:
     branches: [ main ]
 
 jobs:
-  run-selenium-suite:
+  run-selenium-only:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Pull down only your repo code
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2. Setup Node
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
+      # 3. Get the headless Chrome browser ready
       - name: Install Headless Chrome Browser
         uses: browser-actions/setup-chrome@v2
         with:
           chrome-version: stable
           install-chromedriver: true
 
+      # 4. Install your project packages
       - name: Install Project Dependencies
         run: |
           cd selenium_tests
           npm install
 
+      # 5. Run JUST the selenium script
       - name: Execute Live Selenium Tests
         run: |
           cd selenium_tests
           npm run test-report
 
+      # 6. Save the Excel report artifact
       - name: Upload Excel Test Report Matrix
         uses: actions/upload-artifact@v4
         with:
