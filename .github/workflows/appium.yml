@@ -1,4 +1,4 @@
-name: appium
+name: Appium Testing
 
 on:
   push:

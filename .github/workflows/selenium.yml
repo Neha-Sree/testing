@@ -1,4 +1,4 @@
-name: selenium
+name: Selenium Testing
 
 on:
   push:
