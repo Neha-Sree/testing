@@ -1,4 +1,5 @@
 name: Selenium Testing
+run-name: workflow of Selenium Testing
 
 on:
   push:

@@ -1,4 +1,5 @@
 name: Appium Testing
+run-name: workflow of Appium Testing
 
 on:
   push:
