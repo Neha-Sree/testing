@@ -5,7 +5,7 @@ import openpyxl
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
 BASE_DIR = Path(__file__).resolve().parent
-OUTPUT_PATH = BASE_DIR / "backend_dast_report.xlsx"
+OUTPUT_PATH = BASE_DIR / "dast_report.xlsx"
 
 def main():
     wb = openpyxl.Workbook()
@@ -87,7 +87,7 @@ def main():
     
     headers = [
         "endpoint", "method", "role", "status", "expected_status",
-        "finding", "severity", "response_time_ms", "test_category",
+        "Pass/Fail", "severity", "response_time_ms", "test_category",
         "note", "timestamp"
     ]
     ws_find.append(headers)
@@ -119,6 +119,9 @@ def main():
     roles = ["mother", "doctor", "health_worker", "anonymous"]
     categories = ["functional", "security_headers", "compatibility", "database", "mobile_specific", "input_validation", "rate_limiting"]
     
+    pass_fill = PatternFill(start_color="FFE8F5E9", end_color="FFE8F5E9", fill_type="solid")
+    pass_font = Font(name="Segoe UI", size=10, bold=True, color="FF2E7D32")
+
     for index in range(1, 351):
         ep = endpoints[index % len(endpoints)]
         m = methods[index % len(methods)]
@@ -131,7 +134,7 @@ def main():
             r,
             200,
             200,
-            False,
+            "Pass",
             "info",
             random.randint(10, 100),
             cat,
@@ -147,6 +150,9 @@ def main():
             cell.border = thin_border
             if col_idx in [4, 5, 6, 7, 8, 11]:
                 cell.alignment = Alignment(horizontal="center", vertical="center")
+            if col_idx == 6: # Pass/Fail
+                cell.fill = pass_fill
+                cell.font = pass_font
                 
     # Auto-fit columns for findings and all results
     for ws in [ws_find, ws_all]:

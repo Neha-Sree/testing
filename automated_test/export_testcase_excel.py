@@ -5,7 +5,7 @@ import openpyxl
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
 BASE_DIR = Path(__file__).resolve().parent
-OUTPUT_PATH = BASE_DIR / "backend_dast_testcase_report.xlsx"
+OUTPUT_PATH = BASE_DIR / "dast_testcases.xlsx"
 
 def main():
     wb = openpyxl.Workbook()
@@ -58,7 +58,7 @@ def main():
         row_data = [
             f"DAST-{index:04d}",
             tc_name,
-            "PASS",
+            "Pass",
             "",
             role,
             timestamp
