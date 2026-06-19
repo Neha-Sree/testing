@@ -1,4 +1,4 @@
-name: Appium Testing (Report Only)
+name: appium
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Load Testing
+name: load
 
 on:
   push:
