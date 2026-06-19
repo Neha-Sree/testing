@@ -6,7 +6,7 @@ import threading
 import os
 import json
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://127.0.0.1:8000"
 # Allow running shorter tests via env var (e.g. for CI/CD)
 NUM_USERS = int(os.environ.get("LOAD_TEST_USERS", 100))
 DURATION = int(os.environ.get("LOAD_TEST_DURATION", 60)) # seconds

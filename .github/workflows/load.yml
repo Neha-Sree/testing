@@ -33,7 +33,7 @@ jobs:
 
       - name: Wait for Backend to be Ready
         run: |
-          until curl -s http://localhost:8000/health; do
+          until curl -s http://127.0.0.1:8000/health; do
             echo "Waiting for backend..."
             sleep 2
           done
@@ -41,8 +41,8 @@ jobs:
 
       - name: Run Load Testing
         env:
-          LOAD_TEST_USERS: 50
-          LOAD_TEST_DURATION: 30
+          LOAD_TEST_USERS: 100
+          LOAD_TEST_DURATION: 60
         run: |
           python automated_test/load_test.py
 
