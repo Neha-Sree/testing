@@ -26,6 +26,8 @@ jobs:
           pip install openpyxl requests
 
       - name: Start FastAPI Backend
+        env:
+          AUTH_SECRET_KEY: "ci_testing_secret_key_12345"
         run: |
           cd backend
           python run.py &
