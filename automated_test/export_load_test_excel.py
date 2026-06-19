@@ -329,6 +329,70 @@ def create_excel_report():
     ws2.column_dimensions['A'].width = 15
     ws2.column_dimensions['B'].width = 30
     
+    # --- SHEET 3: INDIVIDUAL TEST CASES ---
+    ws3 = wb.create_sheet(title="Individual Test Cases")
+    ws3.views.sheetView[0].showGridLines = True
+    
+    # Headers
+    ws3.merge_cells("A1:F1")
+    title3 = ws3["A1"]
+    title3.value = "Logged Test Cases (Individual Load Test Runs)"
+    title3.font = Font(name="Calibri", size=14, bold=True, color="FFFFFF")
+    title3.fill = header_fill
+    title3.alignment = Alignment(horizontal="center", vertical="center")
+    ws3.row_dimensions[1].height = 25
+    
+    headers3 = ["Test Case ID", "Timestamp", "Request Path", "Method", "Latency (ms)", "Result (Pass/Fail)"]
+    for col_idx, header in enumerate(headers3, 1):
+        cell = ws3.cell(row=3, column=col_idx, value=header)
+        cell.font = bold_font
+        cell.fill = accent_fill
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+    ws3.row_dimensions[3].height = 25
+    
+    row_idx = 4
+    for run in data.get("runs", []):
+        ws3.cell(row=row_idx, column=1, value=run.get("test_case_id")).font = bold_font
+        ws3.cell(row=row_idx, column=1).alignment = Alignment(horizontal="center")
+        
+        ws3.cell(row=row_idx, column=2, value=run.get("timestamp")).font = regular_font
+        
+        ws3.cell(row=row_idx, column=3, value=f"GET {run.get('endpoint')}").font = regular_font
+        
+        ws3.cell(row=row_idx, column=4, value=run.get("method")).font = regular_font
+        ws3.cell(row=row_idx, column=4).alignment = Alignment(horizontal="center")
+        
+        ws3.cell(row=row_idx, column=5, value=round(run.get("latency_ms", 0), 1)).font = regular_font
+        ws3.cell(row=row_idx, column=5).alignment = Alignment(horizontal="right")
+        
+        status = run.get("status", "Pass")
+        pf_cell = ws3.cell(row=row_idx, column=6, value=status)
+        pf_cell.font = Font(name="Calibri", size=11, bold=True, color="388E3C" if status == "Pass" else "C62828")
+        pf_cell.alignment = Alignment(horizontal="center")
+        if status == "Pass":
+            pf_cell.fill = pass_fill
+            
+        for c in range(1, 7):
+            ws3.cell(row=row_idx, column=c).border = thin_border
+            
+        row_idx += 1
+        
+    # Auto-fit ws3 columns
+    for col in ws3.columns:
+        max_len = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            if cell.row == 1:
+                continue
+            if cell.value:
+                max_len = max(max_len, len(str(cell.value)))
+        ws3.column_dimensions[col_letter].width = max(max_len + 3, 12)
+        
+    ws3.column_dimensions['A'].width = 15
+    ws3.column_dimensions['B'].width = 25
+    ws3.column_dimensions['C'].width = 25
+
     # Save to project root
     output_file = os.path.abspath(os.path.join(base_dir, "..", "baseline_load_test_results.xlsx"))
     wb.save(output_file)

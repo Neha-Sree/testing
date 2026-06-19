@@ -8,7 +8,6 @@
     "test-report": "node tests/generate_11_topic_web_report.js"
   },
   "dependencies": {
-    "chromedriver": "^122.0.0",
     "exceljs": "^3.4.0"
   },
   "devDependencies": {
