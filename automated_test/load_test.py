@@ -4,10 +4,12 @@ import requests
 import concurrent.futures
 import threading
 import os
+import json
 
 BASE_URL = "http://localhost:8000"
-NUM_USERS = 100
-DURATION = 60 # seconds
+# Allow running shorter tests via env var (e.g. for CI/CD)
+NUM_USERS = int(os.environ.get("LOAD_TEST_USERS", 100))
+DURATION = int(os.environ.get("LOAD_TEST_DURATION", 60)) # seconds
 
 ENDPOINTS = [
     "/health",
@@ -22,6 +24,16 @@ response_times = []
 status_codes = {}
 exceptions_count = 0
 total_requests = 0
+
+# Endpoint-specific statistics
+endpoint_stats = {
+    ep: {
+        "response_times": [],
+        "success_count": 0,
+        "failure_count": 0,
+        "status_codes": {}
+    } for ep in ENDPOINTS
+}
 
 def run_user_session(stop_time):
     global exceptions_count, total_requests
@@ -39,10 +51,21 @@ def run_user_session(stop_time):
                 response_times.append(latency)
                 status_codes[resp.status_code] = status_codes.get(resp.status_code, 0) + 1
                 total_requests += 1
+                
+                ep_stat = endpoint_stats[endpoint]
+                ep_stat["response_times"].append(latency)
+                if 200 <= resp.status_code < 400:
+                    ep_stat["success_count"] += 1
+                else:
+                    ep_stat["failure_count"] += 1
+                ep_stat["status_codes"][resp.status_code] = ep_stat["status_codes"].get(resp.status_code, 0) + 1
         except Exception as e:
             with lock:
                 exceptions_count += 1
                 total_requests += 1
+                
+                ep_stat = endpoint_stats[endpoint]
+                ep_stat["failure_count"] += 1
 
 def main():
     print(f"Starting Baseline/Load Test...")
@@ -77,10 +100,23 @@ def main():
     # Calculate results
     with lock:
         total_reqs = total_requests
-        success_count = status_codes.get(200, 0)
+        success_count = sum(endpoint_stats[ep]["success_count"] for ep in ENDPOINTS)
         times = list(response_times)
         errs = exceptions_count
         codes_summary = dict(status_codes)
+        
+        endpoints_summary = {}
+        for ep in ENDPOINTS:
+            ep_times = endpoint_stats[ep]["response_times"]
+            endpoints_summary[ep] = {
+                "total_requests": endpoint_stats[ep]["success_count"] + endpoint_stats[ep]["failure_count"],
+                "success_count": endpoint_stats[ep]["success_count"],
+                "failure_count": endpoint_stats[ep]["failure_count"],
+                "avg_latency": sum(ep_times) / len(ep_times) if ep_times else 0,
+                "min_latency": min(ep_times) if ep_times else 0,
+                "max_latency": max(ep_times) if ep_times else 0,
+                "status_codes": dict(endpoint_stats[ep]["status_codes"])
+            }
 
     rps = total_reqs / total_duration if total_duration > 0 else 0
     
@@ -102,6 +138,28 @@ def main():
     if errs > 0:
         print(f"Connection failures/Timeouts: {errs} occurrences")
     print("===================================================")
+
+    # Save to JSON report
+    success_rate_val = (success_count / total_reqs * 100) if total_reqs > 0 else 0
+    json_report = {
+        "target_url": BASE_URL,
+        "virtual_users": NUM_USERS,
+        "duration_seconds": total_duration,
+        "total_requests": total_reqs,
+        "success_rate": f"{success_rate_val:.1f}%",
+        "requests_per_second": rps,
+        "avg_latency_ms": avg_latency,
+        "min_latency_ms": min_latency,
+        "max_latency_ms": max_latency,
+        "exceptions_count": errs,
+        "status_codes": codes_summary,
+        "endpoints": endpoints_summary
+    }
+    
+    report_file = os.path.join(os.path.dirname(__file__), "load_test_results.json")
+    with open(report_file, "w") as f:
+        json.dump(json_report, f, indent=2)
+    print(f"Results JSON saved to: {report_file}")
 
 if __name__ == "__main__":
     main()

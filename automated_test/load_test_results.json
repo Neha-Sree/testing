@@ -1,0 +1,61 @@
+{
+  "target_url": "http://localhost:8000",
+  "virtual_users": 5,
+  "duration_seconds": 5.037701368331909,
+  "total_requests": 331,
+  "success_rate": "100.0%",
+  "requests_per_second": 65.70456956435295,
+  "avg_latency_ms": 75.77547421988403,
+  "min_latency_ms": 4.026174545288086,
+  "max_latency_ms": 2165.228843688965,
+  "exceptions_count": 0,
+  "status_codes": {
+    "200": 331
+  },
+  "endpoints": {
+    "/health": {
+      "total_requests": 82,
+      "success_count": 82,
+      "failure_count": 0,
+      "avg_latency": 88.09003015843834,
+      "min_latency": 4.026174545288086,
+      "max_latency": 2153.892755508423,
+      "status_codes": {
+        "200": 82
+      }
+    },
+    "/education/articles": {
+      "total_requests": 83,
+      "success_count": 83,
+      "failure_count": 0,
+      "avg_latency": 73.38856214500335,
+      "min_latency": 14.538049697875977,
+      "max_latency": 2165.228843688965,
+      "status_codes": {
+        "200": 83
+      }
+    },
+    "/education/faqs": {
+      "total_requests": 84,
+      "success_count": 84,
+      "failure_count": 0,
+      "avg_latency": 60.328554539453414,
+      "min_latency": 12.931346893310547,
+      "max_latency": 2163.8529300689697,
+      "status_codes": {
+        "200": 84
+      }
+    },
+    "/diet/meal-templates": {
+      "total_requests": 82,
+      "success_count": 82,
+      "failure_count": 0,
+      "avg_latency": 81.70061285902814,
+      "min_latency": 47.037363052368164,
+      "max_latency": 114.13764953613281,
+      "status_codes": {
+        "200": 82
+      }
+    }
+  }
+}

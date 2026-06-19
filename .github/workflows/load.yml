@@ -1,0 +1,59 @@
+name: Load Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  load-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Backend and Testing Dependencies
+        run: |
+          pip install -r backend/requirements.txt
+          pip install openpyxl requests
+
+      - name: Start FastAPI Backend
+        run: |
+          cd backend
+          python run.py &
+          echo "FastAPI Backend started in background."
+
+      - name: Wait for Backend to be Ready
+        run: |
+          until curl -s http://localhost:8000/health; do
+            echo "Waiting for backend..."
+            sleep 2
+          done
+          echo "Backend is ready!"
+
+      - name: Run Load Testing
+        env:
+          LOAD_TEST_USERS: 50
+          LOAD_TEST_DURATION: 30
+        run: |
+          python automated_test/load_test.py
+
+      - name: Export Dynamic Excel Report
+        run: |
+          python automated_test/export_load_test_excel.py
+
+      - name: Upload Load Test Excel Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-reports
+          path: |
+            baseline_load_test_results.xlsx

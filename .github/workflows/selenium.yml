@@ -1,0 +1,93 @@
+name: Selenium E2E Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  selenium-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Backend Dependencies
+        run: |
+          pip install -r backend/requirements.txt
+
+      - name: Start FastAPI Backend
+        run: |
+          cd backend
+          python run.py &
+          echo "FastAPI Backend started in background."
+
+      - name: Wait for Backend to be Ready
+        run: |
+          until curl -s http://localhost:8000/health; do
+            echo "Waiting for backend..."
+            sleep 2
+          done
+          echo "Backend is ready!"
+
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install Flutter Packages
+        run: flutter pub get
+
+      - name: Compile Flutter Web App
+        run: |
+          flutter build web --web-renderer html
+
+      - name: Start Web Server
+        run: |
+          python -m http.server 8080 --directory build/web &
+          echo "Web server started in background on port 8080."
+
+      - name: Wait for Web Server
+        run: |
+          until curl -s http://localhost:8080/; do
+            echo "Waiting for web server..."
+            sleep 2
+          done
+          echo "Web server is ready!"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: selenium_tests/package-lock.json
+
+      - name: Install Selenium Test Dependencies
+        run: |
+          cd selenium_tests
+          npm install
+
+      - name: Run Selenium Tests (Headless)
+        env:
+          BASE_URL: http://localhost:8080
+          HEADLESS: "true"
+        run: |
+          cd selenium_tests
+          node run_tests.js
+
+      - name: Upload Selenium Excel Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-reports
+          path: |
+            selenium_tests/reports/*.xlsx
+            selenium_tests/*.xlsx
